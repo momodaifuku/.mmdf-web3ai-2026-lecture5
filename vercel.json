@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/lectures/lecture5/photo_curation_app/$1"
+    }
+  ]
+}
