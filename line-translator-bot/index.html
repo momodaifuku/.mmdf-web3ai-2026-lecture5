@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LINE Translator Bot — ハンズオン教材</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      ハンズオン · v2026.5
+    </div>
+    <h1 class="hero-title">
+      自分専用の<br>
+      ローカル翻訳 LINE Bot を<br>
+      1 時間で作る
+    </h1>
+    <p class="hero-subtitle">
+      自分の PC で動くローカル LLM と AI エージェントを組み合わせて、スマホの LINE から日本語↔英語を翻訳できる Bot を作るハンズオン。Claude Code が伴走してくれるので、設定は対話するだけ。
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge">⚡ 約 60 分</span>
+      <span class="hero-badge">💰 Claude Code 以外ゼロ円</span>
+      <span class="hero-badge">🔒 LLM はあなたの PC で動く</span>
+      <span class="hero-badge">🖥 Mac / Win(WSL2) / Linux</span>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="steps-grid">
+    <a href="step1.html" class="step-card step1">
+      <div class="step-card-icon">🧠</div>
+      <div class="step-card-label">Step 1</div>
+      <h2 class="step-card-title">ローカル AI を作る</h2>
+      <p class="step-card-desc">
+        Ollama (or 同等) でローカル LLM を起動し、Hermes Agent で翻訳エージェントを CLI 上で動かすところまで。<br>
+        構成は自由度高め。Claude Code と相談しながら自分の PC に合わせて調整します。
+      </p>
+      <div class="step-card-meta">
+        <span class="step-card-meta-item">⏱ 約 20–30 分</span>
+        <span class="step-card-meta-item">🎯 CLI 翻訳が動けば完了</span>
+      </div>
+      <span class="step-card-cta">始める</span>
+    </a>
+
+    <a href="step2.html" class="step-card step2">
+      <div class="step-card-icon">💬</div>
+      <div class="step-card-label">Step 2</div>
+      <h2 class="step-card-title">LINE と繋げる</h2>
+      <p class="step-card-desc">
+        LINE Developers Console での手動操作と、Claude Code による自動セットアップを組み合わせて、スマホ LINE から翻訳できる状態に。<br>
+        Step 1 が完了してから取り組んでください。
+      </p>
+      <div class="step-card-meta">
+        <span class="step-card-meta-item">⏱ 約 20–30 分</span>
+        <span class="step-card-meta-item">🎯 スマホで翻訳が返れば完了</span>
+      </div>
+      <span class="step-card-cta">始める</span>
+    </a>
+  </div>
+
+  <a href="customize.html" class="customize-card">
+    <div class="customize-card-title">🎨 完成後 — カスタマイズして遊ぶ</div>
+    <p class="customize-card-desc">
+      SOUL.md を書き換えるだけで、翻訳 Bot を「議事録要約 Bot」「英文添削 Bot」「キャラクター雑談 Bot」などに変身させられる。Slack/Discord 連携・LLM 差し替え・別フレームワーク (NanoClaw / OpenClaw) など、さらに進んだ挑戦のヒントも。
+    </p>
+  </a>
+
+  <a href="compare.html" class="compare-link">
+    <span class="compare-link-emoji">📖</span>
+    <div class="compare-link-body">
+      <div class="compare-link-title">ちなみに解説 — なぜ Hermes Agent を選んだのか?</div>
+      <div class="compare-link-desc">OpenClaw / NanoClaw / Hermes Agent の違いを比較。今回 Hermes を選んだ理由 (シンプル & LINE 対応) を解説</div>
+    </div>
+    <span class="compare-link-arrow">→</span>
+  </a>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span class="section-title-emoji">🗺</span> 全体アーキテクチャ</h2>
+    <p class="section-lead">作るものの設計図。Step 1 で下半分、Step 2 で上半分を組み立てます。</p>
+    <div class="arch-diagram">[ スマホの LINE アプリ ]
+        ↕  HTTPS (Webhook)
+[ LINE Messaging API ]
+        ↕
+[ Cloudflare Tunnel ]              ← Step 2 で導入
+        ↕
+[ Hermes Agent (Gateway) ]         ← Step 1 で導入
+   └─ plugins/platforms/line       (公式 LINE アダプタ同梱)
+        ↕  OpenAI 互換 API
+[ Ollama (LLM ランタイム) ]        ← Step 1 で導入
+   └─ qwen2.5:3b (推奨) or 他モデル
+
+        ↕  これら全部を組み立てるのが  ↑
+[ Claude Code ]   ← あなたの伴走パートナー</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span class="section-title-emoji">✨</span> このハンズオンが目指していること</h2>
+    <div class="feature-grid">
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🛠</div>
+        <div class="feature-tile-title">AI エージェントの中身を体感する</div>
+        <div class="feature-tile-desc">モデル / オーケストレータ / チャネル / 公開トンネル — 部品の責務を実装しながら理解する</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">📦</div>
+        <div class="feature-tile-title">ローカル LLM の実用性</div>
+        <div class="feature-tile-desc">2GB 未満のモデルで翻訳が動く時代。クラウド送信ゼロでプライバシーも確保</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🤝</div>
+        <div class="feature-tile-title">Claude Code との協業を学ぶ</div>
+        <div class="feature-tile-desc">「自分で全部やる」ではなく「AI に任せて自分は方針判断する」の練習</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🧩</div>
+        <div class="feature-tile-title">仕様を読み解く目を養う</div>
+        <div class="feature-tile-desc">LINE プラットフォームの「自動化できる/できない」を見て API 設計を読む</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><span class="section-title-emoji">📚</span> 配布物のファイル一覧</h2>
+    <p class="section-lead">受講者がじかに開くのは <strong>HTML 5 ページ</strong>(index / step1 / step2 / customize / compare)。残りは Claude Code が読む or 配布者向け。</p>
+    <details>
+      <summary>📁 全 16 ファイル一覧 (クリックで展開)</summary>
+      <div class="details-body">
+        <p><strong>受講者向け (HTML — このページから移動)</strong></p>
+        <ul class="bullets">
+          <li><code>index.html</code> — このページ</li>
+          <li><code>step1.html</code> — ローカル AI 構築</li>
+          <li><code>step2.html</code> — LINE 連携</li>
+          <li><code>customize.html</code> — 完成後のカスタマイズ</li>
+          <li><code>compare.html</code> — ちなみに解説 (フレームワーク比較)</li>
+        </ul>
+        <p><strong>Claude Code が読む参考資料</strong></p>
+        <ul class="bullets">
+          <li><code>README.md</code> — 文書版の概観</li>
+          <li><code>PROMPTS.md</code> — 詳細プロンプト集 (Step 1/2 から参照)</li>
+          <li><code>MANUAL.md</code> — LINE Console 手動手順 (Step 2 で参照)</li>
+          <li><code>TROUBLESHOOT.md</code> — 症状別診断プロンプト</li>
+        </ul>
+        <p><strong>配布者向け</strong></p>
+        <ul class="bullets">
+          <li><code>DISTRIBUTION.md</code> — 配布手順</li>
+          <li><code>INSTRUCTOR.md</code> — 転用ガイド</li>
+        </ul>
+        <p><strong>ライセンス・補助</strong></p>
+        <ul class="bullets">
+          <li><code>LICENSE</code> — CC BY-NC-SA 4.0</li>
+          <li><code>.gitignore</code></li>
+          <li><code>style.css</code> / <code>app.js</code> — このページの見た目用</li>
+          <li><code>assets/</code> — SOUL.md など Claude Code 失敗時のフォールバック素材</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+    <h2 class="section-title"><span class="section-title-emoji">📜</span> この教材について</h2>
+    <p class="section-lead">読む前にここを確認すると、教材の温度感がわかります。</p>
+
+    <table class="kv-table">
+      <tr>
+        <td>🗓 バージョン</td>
+        <td><strong>2026.5</strong> 時点の情報をベースに作成。LINE Console UI / Hermes Agent v0.14 / Ollama v0.24 / cloudflared v2026.5 など、各サービスのバージョンや UI は時期によって変わるので、ズレを感じたら Claude Code に「現在の仕様で読み替えて」と頼んでください。</td>
+      </tr>
+      <tr>
+        <td>🎯 位置づけ</td>
+        <td><strong>遊びながら自分で学んでいくための補助教材</strong>です。完璧な手順書ではありません。迷ったら Claude Code と対話 → 試す → 失敗 → 直す、のサイクルで進めるのが本来の使い方。詰まる経験そのものが学びです。</td>
+      </tr>
+      <tr>
+        <td>📄 ライセンス</td>
+        <td><strong>CC BY-NC-SA 4.0</strong>。クレジット表記して非営利で使う限り、<strong>改変・再配布は自由</strong>。商用利用のみ別途要相談。</td>
+      </tr>
+      <tr>
+        <td>🌱 推奨される使い方</td>
+        <td>
+          自分の用途・授業・組織に合わせて<strong>自由に改変</strong> → 自分の GitHub にフォークして公開 → コミュニティで共有が大歓迎です。「私の大学では △△ に改造した」「SOUL.md を ○○ 用に書き換えた」など、それぞれの文脈で枝分かれしていくのが理想。改変版を世に出すときは <code>LICENSE</code> をそのまま付け、自身の名前・所属を README に追記してください。
+        </td>
+      </tr>
+    </table>
+
+    <div class="callout callout-info" style="margin-top: 24px;">
+      <div class="callout-title">🤝 改変・配布を歓迎します</div>
+      <p>
+        この教材は「動いて終わり」ではなく、<strong>みんなで育てる前提</strong>で書いています。気づいたこと・直したい部分・派生例があれば、フォークして GitHub に push、コミュニティで共有してください。<br>
+        改変ガイドは <a href="INSTRUCTOR.md" target="_blank">INSTRUCTOR.md</a>、配布手順は <a href="DISTRIBUTION.md" target="_blank">DISTRIBUTION.md</a> にまとめてあります。
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>LINE Translator Bot</h4>
+        <p>千葉工業大学「Web3/AI 概論」のために開発されたハンズオン教材。他の授業・個人学習にも再利用可能。</p>
+        <p style="margin-top: 10px;">バージョン: 2026.5 / ライセンス: CC BY-NC-SA 4.0</p>
+      </div>
+      <div>
+        <h4>ハンズオン</h4>
+        <ul>
+          <li><a href="step1.html">Step 1: ローカル AI</a></li>
+          <li><a href="step2.html">Step 2: LINE 連携</a></li>
+          <li><a href="customize.html">カスタマイズ</a></li>
+          <li><a href="compare.html">ちなみに解説 — フレームワーク比較</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>参考資料</h4>
+        <ul>
+          <li><a href="README.md">README.md</a></li>
+          <li><a href="MANUAL.md">MANUAL.md</a></li>
+          <li><a href="TROUBLESHOOT.md">TROUBLESHOOT.md</a></li>
+          <li><a href="LICENSE">LICENSE</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      Powered by Ollama · Hermes Agent · Cloudflare Tunnel · LINE Messaging API · Claude Code
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

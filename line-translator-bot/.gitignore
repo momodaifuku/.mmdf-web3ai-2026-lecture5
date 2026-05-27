@@ -1,0 +1,34 @@
+# Credentials & secrets (NEVER commit)
+.env
+.env.local
+*.env
+*-secrets.*
+secrets/
+
+# Hermes-related local state (if anyone places hermes data inside the repo)
+.hermes/
+hermes-agent/
+
+# Ollama local cache (if anyone places ollama data inside the repo)
+.ollama/
+
+# Cloudflared local state
+.cloudflared/
+
+# Editor / OS junk
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# Build / temporary outputs
+*.log
+*.tmp
+*.bak
+.cache/
+node_modules/
+
+# Personal screenshots (if user adds them per-instance)
+screenshots-personal/

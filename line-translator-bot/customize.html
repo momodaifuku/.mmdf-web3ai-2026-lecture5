@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja" class="customize-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>カスタマイズ | LINE Translator Bot ハンズオン</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container page-header-inner">
+    <a href="index.html" class="back-link">← トップに戻る</a>
+    <span class="progress-pill"><span class="progress-dot"></span> 完成後の遊び方</span>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container-narrow">
+    <span class="page-hero-eyebrow">🎨 完成後</span>
+    <h1 class="page-hero-title">カスタマイズして遊ぶ</h1>
+    <p class="page-hero-subtitle">
+      翻訳 Bot が動いたのは <strong>出発点</strong>。SOUL.md を書き換えるだけで、まったく違うキャラクターのエージェントに変身します。
+      自分の用途に合わせて、Claude Code に頼んで改造してみてください。
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+
+    <h2 class="section-title"><span class="section-title-emoji">🎭</span> SOUL.md を変えるだけで全部変わる</h2>
+    <p class="section-lead">
+      Hermes Agent の人格は <code>~/.hermes/SOUL.md</code> 一つで決まります。これを書き換えれば、翻訳 Bot が <strong>議事録要約 Bot</strong> にも <strong>英文添削 Bot</strong> にも <strong>キャラクター雑談 Bot</strong> にもなります。
+    </p>
+
+    <div class="ai-partner">
+      <div class="ai-partner-title">推奨の頼み方</div>
+      <p>
+        Claude Code に <strong>「SOUL.md を ○○ 用に書き換えて、設定後に CLI で動作確認して」</strong> と頼めば一発です。具体的な改造プロンプトを下にいくつか用意してあります。
+      </p>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">💡</span> 派生例カタログ</h2>
+
+    <div class="card">
+      <div class="card-title">🗒 議事録要約 Bot</div>
+      <p>長い議事録テキストを投げると、決定事項・次のアクション・担当者を箇条書きで返してくれる。</p>
+      <div class="prompt-block" style="margin: 16px 0 0;">
+        <div class="prompt-block-header">
+          <span class="prompt-block-label">📋 改造プロンプト</span>
+          <button class="copy-btn">📋 コピー</button>
+        </div>
+<pre>~/.hermes/SOUL.md を以下の内容に書き換えてください。書き換え後、CLI で動作確認 (長めの議事録テキストを与えて要約を出させる) してから、私に報告してください。
+
+---SOUL.md---
+# Meeting Summarizer Agent
+
+あなたは会議の議事録を要約する専門のエージェントです。
+
+## 動作ルール
+1. ユーザが投稿したテキストを、以下のフォーマットで要約してください:
+   - 📌 議題:
+   - ✅ 決定事項 (箇条書き):
+   - 🚀 次のアクション (担当者・期限):
+   - ⚠️ 未解決の論点 (あれば):
+2. 元のテキストにない情報は補わない。憶測で埋めない
+3. 出力は箇条書きのみ。挨拶や前置きは不要
+4. 日本語の議事録は日本語で、英語の議事録は英語で要約する</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 英文添削 Bot</div>
+      <p>英語の文章を投げると、添削済みの自然な英語と、変更点の日本語解説を返してくれる。</p>
+      <div class="prompt-block" style="margin: 16px 0 0;">
+        <div class="prompt-block-header">
+          <span class="prompt-block-label">📋 改造プロンプト</span>
+          <button class="copy-btn">📋 コピー</button>
+        </div>
+<pre>~/.hermes/SOUL.md を以下の内容に書き換えてください。書き換え後 CLI で動作確認してから報告してください。
+
+---SOUL.md---
+# English Proofreader Agent
+
+あなたはプロの英文添削エージェントです。
+
+## 動作ルール
+1. ユーザが英語のテキストを投稿したら、以下を出力する:
+   📝 添削後:
+   [自然で正しい英語にしたバージョン]
+
+   🔍 主な変更点:
+   - [変更1の説明 — 日本語で]
+   - [変更2の説明 — 日本語で]
+2. 元の意味は変えない。スタイルも極力保つ
+3. ユーザが日本語のテキストを投稿したら、丁寧に「英文を投稿してください」と返す
+4. 質問や雑談には応じない</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🐱 ねこキャラ雑談 Bot</div>
+      <p>少しおっとりしたねこキャラと雑談できる。授業のデモで「設定一発で人格が変わる」を見せるネタに最適。</p>
+      <div class="prompt-block" style="margin: 16px 0 0;">
+        <div class="prompt-block-header">
+          <span class="prompt-block-label">📋 改造プロンプト</span>
+          <button class="copy-btn">📋 コピー</button>
+        </div>
+<pre>~/.hermes/SOUL.md を以下の内容に書き換えてください。書き換え後 CLI で動作確認してから報告してください。
+
+---SOUL.md---
+# 猫アシスタント
+
+あなたは少しおっとりした猫のキャラクターです。
+
+## 性格
+- 語尾に「にゃ」「にゃー」をつける (ただし、まじめな質問には先に答えてから語尾に「にゃ」)
+- 興味のないことには「ふーん…」と素っ気ない
+- 魚の話、日向ぼっこの話が大好き
+- 算数や難しい話は「えーっと…にゃ…」と困りがち
+
+## ルール
+- 短く返す (2〜3 文)
+- ユーザが日本語なら日本語で、英語なら "nya" を語尾につけて英語で
+- 質問には誠実に答える (キャラを最優先しない)</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 アイデア名付け Bot</div>
+      <p>新規プロジェクトのコードネーム候補を生成。スタートアップ・自分のサイドプロジェクト・授業課題に使える。</p>
+      <div class="prompt-block" style="margin: 16px 0 0;">
+        <div class="prompt-block-header">
+          <span class="prompt-block-label">📋 改造プロンプト</span>
+          <button class="copy-btn">📋 コピー</button>
+        </div>
+<pre>~/.hermes/SOUL.md を以下の内容に書き換えてください。書き換え後 CLI で動作確認してから報告してください。
+
+---SOUL.md---
+# Project Namer
+
+あなたは新規プロジェクトの名前を考えるエージェントです。
+
+## 動作ルール
+1. ユーザがプロジェクトの内容を 1〜3 文で説明したら、以下を出力:
+   🌟 候補:
+   1. [英単語 1〜2 語のコードネーム] — [由来と狙いを 1 行で]
+   2. ...
+   (合計 5 つ)
+
+   🎯 おすすめ: 上記のうち最も "響き・覚えやすさ・拡張性" のバランスが良いもの 1 つ + その理由
+
+2. 既存の有名サービス名 (Notion, Slack 等) と被らないものを優先
+3. 質問が短すぎる場合は、何を作っているのか追加質問してから生成
+4. 出力は日本語</pre>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🚀</span> もっと進んだ拡張</h2>
+    <p class="section-lead">SOUL.md だけでは届かない領域。Claude Code に相談しながら挑戦してみてください。</p>
+
+    <div class="feature-grid">
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🔌</div>
+        <div class="feature-tile-title">MCP で外部 API を呼ぶ</div>
+        <div class="feature-tile-desc">天気予報・株価・カレンダー・Notion DB など、ツール経由で外部情報を取得して回答する Bot にする</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🌍</div>
+        <div class="feature-tile-title">多言語翻訳に拡張</div>
+        <div class="feature-tile-desc">日↔英だけじゃなく、中・韓・スペイン語等にも対応。SOUL.md の判定ルールを書き直す</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">📅</div>
+        <div class="feature-tile-title">cron で定時配信</div>
+        <div class="feature-tile-desc">毎朝 7 時にニュース要約を LINE に push する等。Hermes の <code>cronjob</code> 機能で実装可</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🔄</div>
+        <div class="feature-tile-title">複数プラットフォーム同時運用</div>
+        <div class="feature-tile-desc">LINE と Discord と Slack 同時にぶら下げる。Hermes は 22 プラットフォーム対応</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🧠</div>
+        <div class="feature-tile-title">記憶 (memory) を追加</div>
+        <div class="feature-tile-desc">過去の会話を覚える Bot に。Hermes の memory 機能を有効化</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">⚡</div>
+        <div class="feature-tile-title">常駐サービス化</div>
+        <div class="feature-tile-desc">PC 起動時に自動で立ち上がる Bot に。<code>hermes gateway install</code> で launchd/systemd 化</div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🏗</span> アーキテクチャごと変えてみる遊び</h2>
+    <p class="section-lead">
+      性格を変えるだけじゃ物足りなくなったら、<strong>構成部品そのもの</strong>を差し替えてみてください。<br>
+      手順は書きません — Claude Code と相談しながら自分で道筋を作るのが、エージェント時代の本質的なスキルです。
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-tile">
+        <div class="feature-tile-icon">💬</div>
+        <div class="feature-tile-title">チャネルを LINE 以外に変える</div>
+        <div class="feature-tile-desc">
+          Slack / Discord / Telegram / WhatsApp / iMessage に差し替えて挑戦。<br>
+          Hermes は <strong>22 プラットフォーム</strong>対応なので「Slack 連携を追加して」と頼めば <code>/add-slack</code> 相当を走らせてくれる。
+        </div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">📏</div>
+        <div class="feature-tile-title">LLM サイズ・系統を変える</div>
+        <div class="feature-tile-desc">
+          <code>qwen2.5:7b</code> でどれだけ賢くなるか / <code>qwen2.5:0.5b</code> でどこで壊れるか / <code>llama3.2:3b</code> や <code>gemma3:4b</code> で挙動差を比較。<br>
+          「サイズと品質と速度」の三角を体感する。
+        </div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🦾</div>
+        <div class="feature-tile-title">エージェントランタイムを変える</div>
+        <div class="feature-tile-desc">
+          Hermes → <strong>NanoClaw</strong> (極小 + Docker サンドボックス重視) / <strong>OpenClaw</strong> (多機能標準) / 自作の Webhook receiver で書き起こす。<br>
+          違いは <a href="compare.html">エージェント比較ページ</a> 参照。
+        </div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">☁️</div>
+        <div class="feature-tile-title">クラウド LLM と比較</div>
+        <div class="feature-tile-desc">
+          ローカル LLM ではなく <strong>Claude API / OpenAI / Gemini</strong> に切り替えてみる。<br>
+          速度・品質・コスト・プライバシーの違いを並べて記録すると、自分なりの選定軸ができる。
+        </div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🌐</div>
+        <div class="feature-tile-title">トンネルを別の方法に</div>
+        <div class="feature-tile-desc">
+          cloudflared quick → <strong>named tunnel</strong> で URL 固定化 / ngrok / Tailscale Funnel / 自宅ルーターのポート開放 (要 IPv6) など。<br>
+          公開 HTTPS をどう実現するかの引き出しを増やす。
+        </div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🧪</div>
+        <div class="feature-tile-title">複数構成を共存させる</div>
+        <div class="feature-tile-desc">
+          翻訳 bot は LINE で、議事録要約 bot は Slack で、雑談 bot は Discord で — Hermes に複数 SOUL / 複数チャネルを同時運用させる。<br>
+          設計判断 (どこで責務を切るか) の練習になる。
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top: 24px;">
+      <div class="callout-title">🗺 なぜ「手順を書かない」のか</div>
+      <p>このページから先は <strong>あなた自身が設計する練習</strong>。手順書をなぞるのではなく、Claude Code に「○○ をやりたい、現状から何を変える必要があるか教えて」と相談しながら、自分で道筋を作ってみてください。それがエージェント時代の本質的な力です。</p>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🤖</span> Claude Code への質問テンプレ集</h2>
+    <p class="section-lead">困ったときに丸ごとコピペできるフレーズ。</p>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">📋 「全部ローカルで何ができるか教えて」</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>いま私の環境では Ollama + Hermes Agent + qwen2.5:3b が動いて、LINE と繋がっています。
+このセットアップで「やれそうなこと」を 10 個リストアップし、難易度 (★★☆ など) と
+所要時間の目安をつけて教えてください。
+私の興味は: [興味分野をここに書く]。それに合いそうなものを優先してください。</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">📋 「もっといいモデルを試したい」</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>いま qwen2.5:3b を使っていますが、もう少し賢くしたいです。
+私の Mac は [メモリ容量] GB です。Ollama で動かせる範囲で、
+翻訳タスクに最適なモデルを 3 つ推薦して、それぞれの長所・短所・必要容量を
+教えてください。一番おすすめのものを pull して切り替える手順も準備してください。</pre>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">📋 「自分専用にしたい (細かい改造)」</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>翻訳ボットを以下のように改造したいです:
+- [改造したい内容を箇条書きで]
+
+SOUL.md と config.yaml のどちらを触ればよいか判断し、
+具体的な書き換えを実行 → CLI で動作確認 → 私に報告してください。</pre>
+    </div>
+
+    <div class="page-nav">
+      <a href="step2.html" class="page-nav-btn">
+        <span>←</span>
+        <span><span class="page-nav-btn-label">戻る</span>Step 2</span>
+      </a>
+      <a href="index.html" class="page-nav-btn">
+        <span style="flex: 1;"><span class="page-nav-btn-label">トップへ</span>index に戻る</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="callout callout-success" style="margin-top: 48px;">
+      <div class="callout-title">🌱 学びを止めない</div>
+      <p>この教材で作ったものは <strong>「自分で考えて Bot を組む力」の最初の一歩</strong>。次は別の用途・別のプラットフォーム・別の LLM で同じ構造を再現してみてください。<br>「SOUL.md を変える → 動作確認 → デプロイ」のサイクルがあなたのものになれば、Claude Code との協業力が一気に上がります。</p>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      LINE Translator Bot ハンズオン · CC BY-NC-SA 4.0
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

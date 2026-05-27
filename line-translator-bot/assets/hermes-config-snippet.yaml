@@ -1,0 +1,25 @@
+# ~/.hermes/config.yaml の翻訳ボット用の変更点（diff スニペット）
+#
+# Claude Code に PROMPTS.md の P2 を実行させると自動で書き換えられます。
+# 手動で適用する場合の参考用。
+# 実際の config.yaml は数千行あるテンプレートですが、変更が必要なのはここだけ。
+
+model:
+  # Hermes 既定のクラウド Anthropic モデル (Hermes バージョンによって異なる) から、
+  # ローカル Ollama 経由に変更
+  default: "qwen2.5:3b"            # ← 推奨。低スペック PC なら 1.5b に。教材デモで 0.5b も使える
+  provider: "ollama"               # ← Ollama を OpenAI 互換エンドポイントとして扱う
+  base_url: "http://localhost:11434/v1"   # ← Ollama 既定の OpenAI 互換エンドポイント
+
+  # Hermes は最小 64K context を要求するが、qwen2.5 系は native 32K
+  # 以下 2 行で Ollama 側に num_ctx を渡し RoPE 拡張で対応
+  context_length: 65536
+  ollama_num_ctx: 65536
+
+# 翻訳タスクには外部ツールが不要なので、ツール混入を遮断する
+# 既定の hermes-cli / hermes-telegram プリセットを空にする
+platform_toolsets:
+  cli: []
+  line: []
+  # 他プラットフォームを使う場合は別途設定。例:
+  # telegram: [hermes-telegram]

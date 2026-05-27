@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja" class="step1-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 1 — ローカル AI を作る | LINE Translator Bot ハンズオン</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container page-header-inner">
+    <a href="index.html" class="back-link">← トップに戻る</a>
+    <span class="progress-pill"><span class="progress-dot"></span> Step 1 of 2</span>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container-narrow">
+    <span class="page-hero-eyebrow">🧠 Step 1</span>
+    <h1 class="page-hero-title">ローカル AI を作る</h1>
+    <p class="page-hero-subtitle">
+      自分の PC の中で LLM (Ollama) と AI エージェント (Hermes) を立ち上げ、CLI で翻訳が動くところまで。LINE 連携は次の Step 2 で。
+    </p>
+    <div class="page-hero-meta">
+      <span>⏱ 約 20〜30 分</span>
+      <span>🎯 ゴール: <code>hermes -z "こんにちは"</code> で英訳が返ってくる</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+
+    <div class="ai-partner">
+      <div class="ai-partner-title">これは「目安」です</div>
+      <p>
+        以下に書いてある推奨セットや手順はあくまで <strong>出発点</strong>。受講者の OS・メモリ容量・ネットワーク環境・既存ツールによって、最適解は人それぞれ違います。
+      </p>
+      <p>
+        <strong>Claude Code と対話しながら</strong>、自分の PC で動く構成を一緒に探してください。エラーが出たらそのままチャットに貼って「直して」と頼めば良いです。<em>つまずきも学びです</em>。
+      </p>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">🪟 Windows をお使いの方へ</div>
+      <p>
+        Hermes Agent ネイティブ Windows 版は早期ベータで一部機能制限あり。<strong>WSL2 (Ubuntu) 上での実行を強く推奨</strong>します。WSL2 内では Mac と同一手順がそのまま通ります。
+      </p>
+      <p>
+        WSL2 未導入の場合、下の起動プロンプトを Claude Code に貼ると、Claude Code がまず OS を判定し、必要なら <strong>WSL2 のインストールから一緒に伴走してくれます</strong>。PowerShell を開いて <code>wsl --install</code> を実行 → Ubuntu を起動 → そこから改めて Claude Code を開いて続行、という流れになります。
+      </p>
+    </div>
+
+    <h2 class="section-title"><span class="section-title-emoji">🎯</span> このステップでやること</h2>
+    <ol class="steps-list">
+      <li>
+        <h3>環境を把握する</h3>
+        <p>OS・CPU アーキ・メモリ・既存ツールを Claude Code に調べてもらい、自分の PC に合うモデルサイズを決める</p>
+      </li>
+      <li>
+        <h3>ローカル LLM ランタイムを入れる</h3>
+        <p>推奨: <strong>Ollama</strong>。代替: LM Studio, llama.cpp, vLLM など</p>
+      </li>
+      <li>
+        <h3>翻訳に使うモデルを取得</h3>
+        <p>推奨: <code>qwen2.5:3b</code> (多言語・1.9GB)。低スペックなら 1.5b、教材的に崩壊例を見たいなら 0.5b</p>
+      </li>
+      <li>
+        <h3>AI エージェント (Hermes Agent) を入れる</h3>
+        <p>LLM の上に立つオーケストレータ。LINE プラットフォームへの接続部品を内蔵している</p>
+      </li>
+      <li>
+        <h3>翻訳人格 (SOUL.md) を設定</h3>
+        <p>「日↔英の翻訳しかしない」キャラを Hermes に与える</p>
+      </li>
+      <li>
+        <h3>CLI から翻訳できるか確認</h3>
+        <p><code>hermes -z "こんにちは"</code> で英訳が返ってくれば Step 1 完了</p>
+      </li>
+    </ol>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🟢</span> 推奨スタック (Starter)</h2>
+    <p class="section-lead">動作確認済みの組み合わせ。これで困らなければ、これでいきましょう。</p>
+
+    <table class="kv-table">
+      <tr><td>OS</td><td>macOS (Apple Silicon) / Linux / WSL2</td></tr>
+      <tr><td>LLM ランタイム</td><td>Ollama (sudo 不要のインストールが可能)</td></tr>
+      <tr><td>モデル</td><td><code>qwen2.5:3b</code> (約 1.9GB、多言語対応、tool-calling 可)</td></tr>
+      <tr><td>エージェント</td><td>Hermes Agent v0.14+ (LINE adapter 同梱)</td></tr>
+      <tr><td>必要メモリ</td><td>メモリ容量に応じて自動選択: 8GB 以上 → <code>qwen2.5:3b</code> / 4〜8GB → <code>qwen2.5:1.5b</code> / 4GB 以下 → <code>qwen2.5:0.5b</code></td></tr>
+      <tr><td>必要ディスク</td><td>5GB 以上の空き</td></tr>
+    </table>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🚀</span> Claude Code に投げる起動プロンプト</h2>
+    <p class="section-lead">
+      Claude Code (新しい会話) を開いて、以下のプロンプトをコピーして貼り付けてください。あとは対話しながら進みます。
+    </p>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">📋 Step 1 起動プロンプト</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>あなたは私と一緒にローカル翻訳ボットを作る伴走パートナーです。
+このプロジェクトディレクトリには教材があります (README.md, PROMPTS.md, MANUAL.md, TROUBLESHOOT.md, assets/ など)。
+まず README.md を読んで全体像を把握してください。
+
+私はこれから Step 1 を実施します。LINE 連携は Step 2 で別途やるので、ここでは触れません。
+
+Step 1 のゴール: 私の PC 上で「ローカル LLM + AI エージェント」を動かし、CLI で翻訳が返ってくる状態にすること。
+
+【最初に必ず: 環境チェックと OS 判定】
+
+何かを実行する前に、必ず以下を私に丁寧に確認してください:
+- 私の OS (macOS / Linux / Windows ネイティブ / WSL2 のどれか)
+- CPU アーキ・メモリ容量・ディスク空き容量
+- 既にインストールされているツール: ollama, hermes, cloudflared, node, brew, python3, curl, unzip
+
+【もし私の OS が Windows ネイティブだった場合】
+
+Hermes ネイティブ Windows 版は早期ベータで動作が不安定なので、まず WSL2 への切り替えを提案してください。具体的には:
+1. 「Hermes は WSL2 (Ubuntu) 上で動かす方が今のところ安定です。WSL2 を入れて、その中でこの先を続けるのはどうですか？」と私に確認
+2. 私が同意したら、PowerShell (管理者) で wsl --install を実行する手順を案内 (5〜10 分の再起動を含む)
+3. Ubuntu が起動したら、その中で Claude Code を開き直してもらい、ステップ 1 を再開する旨を案内
+4. もし私が「ネイティブ Windows のまま進めたい」と返したら、その意思を尊重して進めるが、想定される制約 (ダッシュボード機能制限、一部 path 問題) を一度だけ簡潔に伝える
+
+【進め方】
+
+1. PROMPTS.md の P0, P1, P2 を runbook として参照する (機械的に従わず、私の環境に合わせて判断)
+2. まず上記の環境調査を実施し、推奨モデルサイズ (0.5b / 1.5b / 3b) を判定して計画を提示
+3. 私の OK を得てから順次実行 (各ステップ前に何をするか日本語で簡潔に説明)
+4. Ollama 導入 → モデル pull → 単体翻訳テスト
+5. Hermes Agent 導入 → Ollama を provider として接続 → SOUL.md に翻訳人格を書く
+6. CLI で 4 件のテスト文を翻訳し、すべて成功することを確認
+7. エラーは TROUBLESHOOT.md を参照して自分で診断・修復
+
+Step 1 完了の判定:
+hermes -z "こんにちは、今日は良い天気ですね。" を実行して、英語の翻訳が返ってくる状態。
+
+完了したら、Step 2 (LINE 連携) を始める準備ができたことを私に伝えてください。
+
+始めてください。</pre>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">💡 ヒント: 詰まったらこれを言うと効きます</div>
+      <p><strong>「いま実行したコマンドの出力を見て、何が起きているか診断して」</strong> — Claude Code はログを読むのが得意</p>
+      <p><strong>「私の環境では別の方法のほうが良い？代替案を出して」</strong> — 推奨セットに縛られたくないとき</p>
+      <p><strong>「TROUBLESHOOT.md の関連部分を読んでから提案して」</strong> — 既知のハマりパターンを優先的に確認させる</p>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🔄</span> 推奨セットから外れたいときの選択肢</h2>
+    <p class="section-lead">人と環境はそれぞれ。Claude Code に「これでやりたい」と伝えて代替してもらえる。</p>
+
+    <div class="feature-grid">
+      <div class="feature-tile">
+        <div class="feature-tile-icon">💻</div>
+        <div class="feature-tile-title">LM Studio に変えたい</div>
+        <div class="feature-tile-desc">GUI で扱いたい / 既に LM Studio がある人向け。Hermes config の provider を <code>lmstudio</code> にすれば対応可</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🪶</div>
+        <div class="feature-tile-title">もっと軽いモデル</div>
+        <div class="feature-tile-desc">RAM 不足: <code>qwen2.5:1.5b</code> / 教材で「崩壊例」を見せたい: <code>qwen2.5:0.5b</code></div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🦙</div>
+        <div class="feature-tile-title">Llama 系を試したい</div>
+        <div class="feature-tile-desc"><code>llama3.2:3b</code> はネイティブ 128K context (Hermes の 64K 制約クリア)。日本語はやや弱め</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">💎</div>
+        <div class="feature-tile-title">Gemma に変えたい</div>
+        <div class="feature-tile-desc">Google 製。<code>gemma3:4b</code> あたりが軽量で良いバランス。多言語対応はモデルにより差</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">🌐</div>
+        <div class="feature-tile-title">Hermes 以外のエージェント</div>
+        <div class="feature-tile-desc">NanoClaw, Goose, OpenClaw, 自前 Python など。ただし Step 2 の LINE 連携はゼロから書く必要があるので工数増。違いは <a href="compare.html">フレームワーク比較ページ</a> 参照</div>
+      </div>
+      <div class="feature-tile">
+        <div class="feature-tile-icon">☁️</div>
+        <div class="feature-tile-title">クラウド LLM を試す</div>
+        <div class="feature-tile-desc">完全ローカルじゃなくてもいいなら OpenAI / Anthropic API を Hermes に繋ぐことも可。比較教材になる</div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🆘</span> よくある詰まり方</h2>
+
+    <details>
+      <summary>"context window 32K is below minimum 64K" エラーが出る</summary>
+      <div class="details-body">
+        <p>Hermes は最小 64K 要求、qwen2.5 系は native 32K。<code>config.yaml</code> に <code>context_length: 65536</code> と <code>ollama_num_ctx: 65536</code> を追加して RoPE 拡張で対応。Claude Code に「context window エラーが出た」と伝えれば自動修復してくれる。</p>
+      </div>
+    </details>
+    <details>
+      <summary>翻訳結果が中国語で返ってくる / 全然違うことを答える</summary>
+      <div class="details-body">
+        <p>モデルが小さすぎる可能性が高い (0.5b など)。1 ランク上のモデルに切り替えるか、SOUL.md の例示をもっと多くする。Claude Code に「品質が崩壊してる、対処して」で OK。</p>
+      </div>
+    </details>
+    <details>
+      <summary>hermes コマンドが SyntaxError で起動しない</summary>
+      <div class="details-body">
+        <p>macOS の場合、システム Python 3.9 が拾われてエラーになりがち。正しいパスは <code>~/.hermes/hermes-agent/venv/bin/hermes</code>。<code>~/tools/bin/hermes</code> にシンボリックリンクを張り直せば解決。</p>
+      </div>
+    </details>
+    <details>
+      <summary>Ollama のダウンロードが遅い・止まる</summary>
+      <div class="details-body">
+        <p>ネットワーク or ストレージ問題。Claude Code に「ollama pull が止まってる」と伝える。途中まで落ちていれば resume できる。完全に止まる場合は 0.5b のような軽量モデルで代替検討。</p>
+      </div>
+    </details>
+    <details>
+      <summary>全部やり直したい</summary>
+      <div class="details-body">
+        <p><code>TROUBLESHOOT.md</code> の <strong>P-PRESET-1</strong> プロンプトを Claude Code に貼ると、削除と再構築の手順をガイドしてくれる。</p>
+      </div>
+    </details>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">✅</span> Step 1 完了チェック</h2>
+    <p class="section-lead">以下を実行してきれいな英訳が返ってくれば、Step 2 へ進む準備完了。</p>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">🧪 Step 1 動作確認コマンド</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>hermes -z "こんにちは、今日は良い天気ですね。"
+# 期待される出力: Hello で始まる英訳
+
+hermes -z "Lightweight local language models are enabling a new wave of privacy-preserving AI assistants."
+# 期待される出力: 軽量で... のような日本語訳
+
+hermes -z "What is the capital of France?"
+# 期待される出力: 「フランスの首都は何ですか？」 (回答ではなく翻訳)</pre>
+    </div>
+
+    <div class="page-nav">
+      <a href="index.html" class="page-nav-btn">
+        <span>←</span>
+        <span><span class="page-nav-btn-label">戻る</span>トップ</span>
+      </a>
+      <a href="step2.html" class="page-nav-btn page-nav-btn-primary">
+        <span style="flex: 1;"><span class="page-nav-btn-label">次へ</span>Step 2: LINE と繋げる</span>
+        <span>→</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      LINE Translator Bot ハンズオン · CC BY-NC-SA 4.0
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja" class="compare-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ちなみに解説 — OpenClaw / NanoClaw / Hermes Agent の違い</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* compare 用の追加スタイル (Geist調) */
+  .agent-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .agent-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .agent-icon { font-size: 1.6rem; line-height: 1; opacity: 0.85; }
+  .agent-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    letter-spacing: var(--tracking-tight);
+  }
+  .agent-tagline {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+    letter-spacing: 0;
+  }
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  @media (max-width: 900px) { .agent-grid { grid-template-columns: 1fr; } }
+  .agent-card > p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .pros, .cons { margin-top: 14px; }
+  .pros-title, .cons-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  .pros ul, .cons ul { list-style: none; padding-left: 0; }
+  .pros li, .cons li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 3px 0 3px 18px;
+    position: relative;
+    line-height: 1.55;
+  }
+  .pros li::before {
+    content: "+";
+    position: absolute; left: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  .cons li::before {
+    content: "−";
+    position: absolute; left: 0;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+  }
+  .why-tile {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 22px;
+  }
+  .verdict-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 18px;
+    align-items: start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  @media (max-width: 700px) { .verdict-row { grid-template-columns: 1fr; gap: 6px; } }
+  .verdict-row:last-child { border-bottom: none; }
+  .verdict-criterion {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    letter-spacing: var(--tracking-tight);
+  }
+  .verdict-detail {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+  .verdict-winner {
+    display: inline-block;
+    background: var(--bg-inverse);
+    color: var(--text-inverse);
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin-left: 4px;
+    letter-spacing: 0;
+    font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+    text-transform: uppercase;
+    vertical-align: 1px;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container page-header-inner">
+    <a href="index.html" class="back-link">← トップに戻る</a>
+    <span class="progress-pill">📖 ちなみに解説</span>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container-narrow">
+    <span class="page-hero-eyebrow">📖 ちなみに解説</span>
+    <h1 class="page-hero-title">OpenClaw / NanoClaw / Hermes Agent<br>3 つのエージェント・フレームワークの違い</h1>
+    <p class="page-hero-subtitle">
+      このハンズオンでは <strong>Hermes Agent</strong> を採用しました。同じ「ローカルで動く AI エージェント」枠の選択肢として OpenClaw・NanoClaw もあります。それぞれの設計思想と、今回 Hermes を選んだ理由をまとめます。
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+
+    <h2 class="section-title"><span class="section-title-emoji">🧩</span> 3 つの全体像</h2>
+    <p class="section-lead">どれも「LLM をオーケストレーションしてメッセージングプラットフォームと繋ぐ」役割は同じ。違いは設計の力点。</p>
+
+    <div class="agent-grid">
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon">🏛</div>
+          <div>
+            <div class="agent-name">OpenClaw</div>
+            <div class="agent-tagline">標準的・多機能・歴史長め</div>
+          </div>
+        </div>
+        <p>
+          長くから存在する AI エージェントフレームワーク。設定ファイル (JSON / YAML) ベースで、多くのチャネル・LLM プロバイダに対応。標準的だが、機能数の多さゆえセットアップは重め。
+        </p>
+        <div class="pros">
+          <div class="pros-title">強み</div>
+          <ul>
+            <li>歴史長く、ナレッジが豊富</li>
+            <li>多機能 (プラグイン・スキル多数)</li>
+            <li>多くの企業導入実績</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">弱み</div>
+          <ul>
+            <li>設定項目が多く初学者が迷う</li>
+            <li>設定の複雑さゆえ攻撃面 (config injection 等) が広いという指摘もある</li>
+            <li>LINE 公式対応の状況は限定的</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon">🔬</div>
+          <div>
+            <div class="agent-name">NanoClaw</div>
+            <div class="agent-tagline">極小・コンテナ隔離・個人所有</div>
+          </div>
+        </div>
+        <p>
+          OpenClaw の「監査できない複雑さ」への反動として作られた軽量フレームワーク。<strong>~15 ファイルの極小実装</strong>、Docker コンテナで OS レベルの隔離を提供。Claude Agent SDK ベース。
+        </p>
+        <div class="pros">
+          <div class="pros-title">強み</div>
+          <ul>
+            <li>コード規模が小さく全部読める</li>
+            <li>Docker サンドボックスで安全</li>
+            <li>個人所有・カスタマイズ前提の設計</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">弱み</div>
+          <ul>
+            <li><strong>LINE 非対応</strong> (skill 自作で 2〜3 日)</li>
+            <li><strong>Docker 必須</strong>でセットアップが重い</li>
+            <li>設定ファイルなし思想 (Claude Code に都度コード書き換えさせる)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon">🚀</div>
+          <div>
+            <div class="agent-name">Hermes Agent</div>
+            <div class="agent-tagline">自己改善・多プラットフォーム</div>
+          </div>
+        </div>
+        <p>
+          Nous Research 開発。"育つ AI" のコンセプトで永続メモリを持ち、<strong>22 メッセージングプラットフォームに公式対応</strong>。LLM プロバイダも豊富で Ollama を含む。YAML 設定で扱いやすい。
+        </p>
+        <div class="pros">
+          <div class="pros-title">強み</div>
+          <ul>
+            <li><strong>LINE が v0.14 以降公式同梱</strong></li>
+            <li>Docker 不要 (curl 一発インストール)</li>
+            <li>Ollama / OpenAI / Anthropic 等 22+ LLM</li>
+            <li>22 メッセージング platform 対応</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <div class="cons-title">弱み</div>
+          <ul>
+            <li>機能多すぎて全貌把握は大変</li>
+            <li>tool-calling 前提なので小さいモデルでは指示追従に弱い</li>
+            <li>Windows ネイティブは早期ベータ (WSL2 推奨)</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">📊</span> なぜ今回は Hermes を選んだか</h2>
+    <p class="section-lead">「シンプル & LINE 対応」が最大の決め手。受講者のセットアップ負荷を最小化したかった。</p>
+
+    <div class="why-tile">
+      <div class="verdict-row">
+        <div class="verdict-criterion">⚡ セットアップの簡単さ</div>
+        <div class="verdict-detail">
+          curl 一発でインストール → YAML 一行で Ollama 連携。
+          NanoClaw は Docker Desktop + Sandboxes 機能の有効化が必要で、教室の Wi-Fi で詰みやすい。
+          <span class="verdict-winner">Hermes 採用</span>
+        </div>
+      </div>
+      <div class="verdict-row">
+        <div class="verdict-criterion">💬 LINE 公式対応</div>
+        <div class="verdict-detail">
+          Hermes は <code>plugins/platforms/line/</code> に LINE アダプタを同梱 (v0.14.0 以降)。
+          NanoClaw は LINE 非対応で、対応するには Channel adapter を自作 (実装 2〜3 日)。
+          授業の本筋は「設定の簡便さ」なので、NanoClaw を選ぶと脇道に逸れる。
+          <span class="verdict-winner">Hermes 採用</span>
+        </div>
+      </div>
+      <div class="verdict-row">
+        <div class="verdict-criterion">🪶 Docker 不要</div>
+        <div class="verdict-detail">
+          Hermes は local バックエンドがデフォルトで Docker 不要。
+          NanoClaw は Docker 必須でディスク数 GB と Sandboxes 機能の前提あり。
+          低スペック PC でも始められる柔軟性が要件だったので Hermes が有利。
+          <span class="verdict-winner">Hermes 採用</span>
+        </div>
+      </div>
+      <div class="verdict-row">
+        <div class="verdict-criterion">🧠 ローカル LLM 連携</div>
+        <div class="verdict-detail">
+          Hermes は OpenAI 互換エンドポイントを <code>base_url</code> で指定するだけで Ollama を見られる。
+          OpenClaw は設定が散らかっているし、NanoClaw はそもそも LLM 接続も Claude Agent SDK 経由で固有。
+          <span class="verdict-winner">Hermes 採用</span>
+        </div>
+      </div>
+      <div class="verdict-row">
+        <div class="verdict-criterion">📖 学習素材として</div>
+        <div class="verdict-detail">
+          コードを全部読みたいなら NanoClaw が最強 (~15 ファイル)。OpenClaw は機能網羅向き。Hermes は中間。
+          初回ハンズオンとしては「動くまでが速い」が最優先と判断して Hermes。
+          <strong>慣れた後、NanoClaw でコード読解に挑戦するのは強くおすすめ。</strong>
+          <span class="verdict-winner">Hermes 採用 (NanoClaw は次の学び)</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🔄</span> 後で乗り換える時のヒント</h2>
+    <p class="section-lead">ハンズオン完了後、別の系統を試したくなったら以下を参考に。</p>
+
+    <details>
+      <summary>Hermes → NanoClaw に乗り換えたい</summary>
+      <div class="details-body">
+        <p>共通の概念 (LLM + チャネル + Webhook + tunnel) は同じなので、知識は移植できる。</p>
+        <ul class="bullets">
+          <li>NanoClaw は Claude Agent SDK ベースなので、Anthropic API キーが必要 (Ollama も <code>ANTHROPIC_BASE_URL</code> 経由で接続可)</li>
+          <li>Docker Desktop 4.58+ と "Docker Sandboxes" 機能を有効化</li>
+          <li>LINE 用の skill が無いので、Telegram / Discord などへチャネル切替が現実的</li>
+          <li>Claude Code に「NanoClaw に乗り換えたい、現在の Hermes 設定を踏まえて手順を提案して」と頼むのが最短</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Hermes → OpenClaw に乗り換えたい</summary>
+      <div class="details-body">
+        <p>多機能なので「Hermes でできなかった〇〇がやりたい」という具体的動機がある時に試すのが良い。漠然と乗り換えると複雑さに溺れる。</p>
+        <ul class="bullets">
+          <li>JSON 設定ファイル中心 (Hermes の YAML より項目が多い)</li>
+          <li>プラグインシステムが充実 (Discord/Slack/Email など)</li>
+          <li>セキュリティ的に古い構造の指摘もあるので、本番運用前にレビュー推奨</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>全部やめて「自作 Webhook receiver」で書きたい</summary>
+      <div class="details-body">
+        <p>勉強として最も学べる。Express/FastAPI で 100 行程度の webhook receiver を書き、Ollama を直接叩く。</p>
+        <ul class="bullets">
+          <li>署名検証 (HMAC-SHA256) を自分で実装</li>
+          <li>LINE Reply API への HTTPS POST も自分で書く</li>
+          <li>フレームワークが何を抽象化してくれていたかが体感で分かる</li>
+          <li>Claude Code に「Hermes を使わずに LINE bot を素の Node.js で書き直して」と頼むと壁打ち相手になる</li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="callout callout-info" style="margin-top: 32px;">
+      <div class="callout-title">📝 メモ — フレームワーク選定は「文脈次第」</div>
+      <p>このページの結論「Hermes が良い」は、<strong>本ハンズオンの目的 (60 分で LINE 連携のローカル翻訳 Bot を完成させる)</strong> に対しての話。<br>
+      用途が変われば最適解も変わります。例えば「企業内で Slack のみ運用、セキュリティ重視」なら NanoClaw + Docker が最適だし、「複雑なワークフロー自動化」なら OpenClaw が当てはまる場面もある。<br>
+      <strong>「最強のフレームワーク」は存在しない。文脈で選ぶのが正しい。</strong></p>
+    </div>
+
+    <div class="page-nav">
+      <a href="index.html" class="page-nav-btn">
+        <span>←</span>
+        <span><span class="page-nav-btn-label">戻る</span>トップ</span>
+      </a>
+      <a href="customize.html" class="page-nav-btn">
+        <span style="flex: 1;"><span class="page-nav-btn-label">関連</span>カスタマイズして遊ぶ</span>
+        <span>→</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      LINE Translator Bot ハンズオン · CC BY-NC-SA 4.0
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

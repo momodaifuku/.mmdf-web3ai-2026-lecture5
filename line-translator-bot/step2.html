@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja" class="step2-page">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step 2 — LINE と繋げる | LINE Translator Bot ハンズオン</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container page-header-inner">
+    <a href="index.html" class="back-link">← トップに戻る</a>
+    <span class="progress-pill"><span class="progress-dot"></span> Step 2 of 2</span>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container-narrow">
+    <span class="page-hero-eyebrow">💬 Step 2</span>
+    <h1 class="page-hero-title">LINE と繋げる</h1>
+    <p class="page-hero-subtitle">
+      Step 1 で動くようになった CLI 翻訳エージェントを、スマホの LINE トーク画面から呼べるようにする。LINE 側に手動操作が必要な部分が混ざるので、Step 1 より少し堅めの手順で進めます。
+    </p>
+    <div class="page-hero-meta">
+      <span>⏱ 約 20〜30 分</span>
+      <span>🎯 ゴール: スマホ LINE で翻訳結果が返ってくる</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-narrow">
+
+    <div class="callout callout-warn">
+      <div class="callout-title">⚠️ 開始前の前提</div>
+      <p><strong>Step 1 が完了していること</strong> (CLI で <code>hermes -z "こんにちは"</code> が動く状態)。</p>
+      <p>まだなら <a href="step1.html">Step 1 に戻ってください</a>。</p>
+    </div>
+
+    <h2 class="section-title"><span class="section-title-emoji">🗺</span> このステップの全体像</h2>
+    <p class="section-lead">大きく 3 つの局面に分かれます。</p>
+
+    <div class="status-row">
+      <div class="status-tile">
+        <div class="status-tile-emoji">🌐</div>
+        <div class="status-tile-label">フェーズ A</div>
+        <div class="status-tile-value">LINE Console で<br>認証情報3つを取る</div>
+      </div>
+      <div class="status-tile">
+        <div class="status-tile-emoji">🤖</div>
+        <div class="status-tile-label">フェーズ B</div>
+        <div class="status-tile-value">Claude Code が<br>自動セットアップ</div>
+      </div>
+    </div>
+    <div class="status-row">
+      <div class="status-tile" style="grid-column: span 2;">
+        <div class="status-tile-emoji">📱</div>
+        <div class="status-tile-label">フェーズ C</div>
+        <div class="status-tile-value">スマホで友だち追加してテスト</div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🌐</span> フェーズ A — LINE Console で認証情報を取る</h2>
+    <p class="section-lead">
+      ここは Claude Code には代行できません (LINE の API 仕様で公開されていないため)。あなたがブラウザで操作する部分です。<br>
+      所要 <strong>5〜10 分</strong>。<a href="MANUAL.md" target="_blank">MANUAL.md</a> に詳細手順あり。
+    </p>
+
+    <ol class="steps-list">
+      <li>
+        <h3>LINE 公式アカウントを開設</h3>
+        <p><a href="https://www.linebiz.com/jp/entry/" target="_blank" rel="noopener">linebiz.com/jp/entry/</a> から開設。名前は <code>Translator</code> など (※「LINE」「公式」「bot」は使えない NG 単語)</p>
+      </li>
+      <li>
+        <h3>Messaging API を有効化</h3>
+        <p>OA Manager の「設定 → Messaging API → 利用する」。プロバイダー選択 → プライバシーポリシーは空のままOK</p>
+      </li>
+      <li>
+        <h3>① Channel secret をコピー</h3>
+        <p>OAM の Messaging API ページに 32 桁 hex で表示される (例: <code>c358227d77b51aab...</code>)</p>
+      </li>
+      <li>
+        <h3>② Channel access token を発行</h3>
+        <p><a href="https://developers.line.biz/console/" target="_blank" rel="noopener">developers.line.biz/console</a> に移動 → 同じチャネル → Messaging API タブ → 「Issue」ボタン</p>
+      </li>
+      <li>
+        <h3>③ Your user ID をコピー</h3>
+        <p>同じチャネルの「チャネル基本設定」タブ → 下にスクロール → 「あなたのユーザーID」(<code>U</code> で始まる32文字)</p>
+      </li>
+      <li>
+        <h3>OAM 側で自動応答を OFF</h3>
+        <p>OAM の「応答設定」で「応答メッセージ」「あいさつメッセージ」を両方オフ。<br><strong>これをしないと bot が翻訳する前に LINE 標準テンプレが先に返ってくる</strong></p>
+      </li>
+    </ol>
+
+    <div class="callout callout-info">
+      <div class="callout-title">📑 詳細手順は MANUAL.md にある</div>
+      <p>各ステップの画面遷移・ボタンの位置などは <a href="MANUAL.md" target="_blank">MANUAL.md</a> を別タブで開いて参照しながら進めると確実です。スクリーンショットが <code>assets/screenshots/</code> に置かれていればそちらも参照可。</p>
+    </div>
+
+    <div class="rescue-tile">
+      <div class="rescue-tile-header">
+        <div class="rescue-tile-emoji">🆘</div>
+        <h3 class="rescue-tile-title">詰まった時は — Claude Code に伴走してもらおう</h3>
+      </div>
+      <p>
+        OAM と Developers Console を行き来したり、ボタンが見つからなかったり、UI が改修されて手順と違って見えたり… <strong>よくあることです</strong>。独力で粘って 30 分溶かす前に、AI に画面を見せながら一緒に進めてもらいましょう。
+      </p>
+
+      <div class="rescue-tile-sublabel">こんな時に効きます</div>
+      <ul class="bullets">
+        <li>OAM と Developers Console を行ったり来たりして混乱している</li>
+        <li>「Messaging APIを利用する」ボタンが見つからない</li>
+        <li>プロバイダー選択モーダルでどれを選べばいいか分からない</li>
+        <li>応答設定 (応答メッセージ・あいさつメッセージ) の場所が分からない</li>
+        <li>Issue ボタンを押した後 Token が表示されず焦った</li>
+        <li>UI が刷新されて MANUAL.md と微妙に違っている</li>
+      </ul>
+
+      <details>
+        <summary>📋 伴走プロンプトを開く (使う前に必ず読む)</summary>
+        <div class="details-body">
+          <p class="rescue-tile-warn">
+            ⚠️ <strong>考えずに貼らないでください</strong>。まず上のリストで「自分の状況に近い」かを確認してから使ってください。<br>
+            このプロンプトは「フェーズ A 全体を AI に丸投げ」ではなく「<strong>困っているポイントを聞いてもらって 1 ステップずつ案内</strong>」を頼むものです。シークレット値は AI に見せない方針は維持されます。
+          </p>
+          <div class="prompt-block" style="margin: 0;">
+            <div class="prompt-block-header">
+              <span class="prompt-block-label">📋 LINE Console 伴走プロンプト</span>
+              <button class="copy-btn">📋 コピー</button>
+            </div>
+<pre>LINE Developers Console と Official Account Manager の操作で詰まっています。
+このプロジェクトの MANUAL.md にステップ A の手順が書いてあります。先にこのファイルを読んで内容を把握してください。
+
+あなたは私の隣でブラウザ操作を伴走するパートナーです。上から目線にならず、対等な仲間として、私のペースに合わせて 1 つずつ案内してください。
+
+【進め方】
+
+1. まず私に「今どこで詰まっているか」を聞く。具体的な例:
+   - 「LINE 公式アカウントを作るページにどう行けばいいか分からない」
+   - 「OAM の Messaging API 設定画面が見つからない」
+   - 「Channel secret はあるけど Access token のボタンが見当たらない」
+   - 「Your user ID がどこにあるか分からない」
+   など、私の言葉で説明してもらう
+
+2. 私の状況に合わせて、次に何をすればよいかを 1 ステップだけ示す:
+   - 「ブラウザのアドレスバーに https://... と入力してください」
+   - 「画面の右上にある『○○』ボタンをクリックしてください」
+   など、具体的なクリック先・URL を 1 つだけ伝える
+
+3. 私が「できた」と返したら次の 1 ステップへ。失敗したら一緒に原因を探る
+
+4. もし画面の何かが分からなければ、私に URL の貼り付け or スクリーンショットを依頼してください
+
+5. 私が「OAM と Developers Console の違いが分からない」と言ったら、それを 2 文で平易に説明 (運用画面 vs API 設定画面)
+
+【絶対に守ること】
+
+- LINE Channel Secret や Access Token の値を私に「貼り付けて」と言わない。値の確認は「先頭2文字だけ教えてください」など最小限に
+- 「すぐできますよ」「簡単ですよ」など見下す表現禁止
+- 私が画面を読み上げたり貼り付けた情報は、必要な部分だけ使う (個人情報や秘密情報があれば指摘するだけ)
+
+【ゴール】
+
+私が以下の状態にたどり着けば伴走終了:
+- LINE_CHANNEL_SECRET (32桁hex) を自分のメモ帳に保存できた
+- LINE_CHANNEL_ACCESS_TOKEN (長いbase64) を自分のメモ帳に保存できた
+- LINE_ALLOWED_USERS (U で始まる32文字) を自分のメモ帳に保存できた
+- OAM の応答メッセージ・あいさつメッセージを OFF にできた
+
+3 つ取れて応答設定も OFF になったら、私に「これで Step 2 本編のプロンプト (フェーズ B) に進めますね」と案内してください。
+
+始めてください。まずは私に「今どこで詰まっていますか？」と聞いてください。</pre>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🤖</span> フェーズ B — Claude Code と一緒にセットアップ</h2>
+    <p class="section-lead">
+      3 つの値が揃ったら、以下のプロンプトを Step 1 と同じ Claude Code 会話に貼り付けます。<br>
+      <strong>シークレット (Token / Secret) を AI チャットに貼らない</strong>方針で進めるので、最初に <code>.env</code> ファイルを自分で編集する場面があります。Claude Code が伴走してくれるので大丈夫。
+    </p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">🛡 なぜ自分で書き込むのか</div>
+      <p>シークレットを AI チャットに貼ると、会話ログ・スクショ・転送先に残ります。普段の習慣が将来の本番運用での事故を呼ぶので、いまから「AI に渡さない」を体に染み込ませる練習です。Claude Code が「上から目線」ではなくフラットに案内してくれます。エディタ操作が不安なら遠慮なく言えば一緒にやってくれます。</p>
+    </div>
+
+    <div class="prompt-block">
+      <div class="prompt-block-header">
+        <span class="prompt-block-label">📋 Step 2 起動プロンプト</span>
+        <button class="copy-btn">📋 コピー</button>
+      </div>
+<pre>Step 1 (ローカル AI 環境) は完了しています。これから Step 2 で LINE と繋ぎます。
+
+私はすでに LINE Developers Console で 3 つの値を取得済みです (まだなら MANUAL.md ステップ A を案内してください):
+- LINE_CHANNEL_SECRET
+- LINE_CHANNEL_ACCESS_TOKEN
+- LINE_ALLOWED_USERS
+
+【重要 — 進め方の方針】
+シークレットを AI チャットに貼らない方針で進めてください。
+理由は最初に私に対等な仲間として簡潔に説明 (上から目線禁止、堅苦しくしない、2〜3 文)。
+例: 「Token を AI チャットに貼ると会話ログ等に残るんだよね。本番運用で API キー扱うときに同じ習慣だと事故るから、今のうちに『AI に渡さない』を体に染み込ませる練習として、今回は一緒にあなたの手で .env を書く形でいきましょう。」
+
+【手順】
+
+1. 私の OS と Hermes 設置場所を確認し、私の .env の実際のパス (通常 ~/.hermes/.env、環境次第) を特定して私に伝える
+
+2. 私の OS に合わせて最もシンプルなエディタを 1 つ目に提示し、コマンドを示す:
+   - macOS: nano (TextEdit は rich text 化のリスクあり推奨しない)
+   - Linux/WSL2: nano
+   - Windows ネイティブ: notepad / VSCode (WSL2 なら nano)
+   - VSCode などが入っていれば代替案として併記
+
+3. 書き込んでもらう内容をブロックで見せる:
+   LINE_CHANNEL_SECRET=...自分の値...
+   LINE_CHANNEL_ACCESS_TOKEN=...自分の値...
+   LINE_ALLOWED_USERS=...自分の値...
+   LINE_PORT=8646
+   「...自分の値...」を実際の値に置き換えて保存と案内
+
+4. 私が「やり方わからない」「エディタどうするの？」と言ったら、対等な伴走者として nano の最低限の使い方を 5 行以内で教える (矢印キーで移動 / Ctrl+O で保存 / Enter で確定 / Ctrl+X で終了)。差別的言い方禁止、「簡単ですよ」も禁止
+
+5. 私が「完了」「done」「書いた」と言ったら、grep で 4 つのキー (LINE_CHANNEL_SECRET / LINE_CHANNEL_ACCESS_TOKEN / LINE_ALLOWED_USERS / LINE_PORT) が .env に存在することだけ確認 (値そのものは絶対に表示・echo・引用しないこと)
+
+6. bash 変数経由で curl GET https://api.line.me/v2/bot/info を叩いて疎通確認 (display name と basicId が返ってきたら OK と報告)。トークン値は絶対に画面に出さない
+
+7. cloudflared がなければ導入 (sudo なし、~/tools/bin/cloudflared に直接バイナリ配置)、cloudflared tunnel --url http://localhost:8646 をバックグラウンド起動、trycloudflare.com URL を抽出して LINE_PUBLIC_URL として .env に追記
+
+8. LINE Messaging API に webhook URL を curl PUT で登録、curl POST で疎通テスト、success: true を確認
+
+9. hermes gateway run をバックグラウンド起動、ログで "✓ line connected" と "LINE: webhook listening" を確認
+
+10. 完了したら、MANUAL.md のステップ B〜D (Use webhook を ON、QR で友だち追加、テスト送信) を私に実行するよう案内
+
+エラー時は TROUBLESHOOT.md を参照して自分で診断・修復。
+注意: トークン値や Channel secret の中身を絶対に画面に表示しないこと。デバッグで先頭数文字だけ見せる場合は cut -c1-6 などで明示的に切り詰めること。
+
+始めてください。</pre>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">📱</span> フェーズ C — スマホで友だち追加してテスト</h2>
+    <p class="section-lead">Claude Code から指示があれば、以下を順にやります。</p>
+
+    <ol class="steps-list">
+      <li>
+        <h3>"Use webhook" トグルを ON</h3>
+        <p>LINE Developers Console → Translator チャネル → Messaging API タブの Webhook settings 欄 → トグルを <strong>ON</strong>。Verify ボタンが緑になっていれば疎通済み</p>
+      </li>
+      <li>
+        <h3>QR コードで友だち追加</h3>
+        <p>同じ Messaging API タブの QR コードをスマホ LINE の「友だち追加 → QR コード」で読み取る → 追加</p>
+      </li>
+      <li>
+        <h3>テストメッセージを送る</h3>
+        <p>トーク画面から「<code>こんにちは</code>」と送信 → 数秒〜数十秒で「Hello」 等の英訳が返ってくれば成功</p>
+      </li>
+    </ol>
+
+    <div class="callout callout-success">
+      <div class="callout-title">🎉 翻訳が返ってきたら</div>
+      <p>Claude Code に <strong>「届いた」と一言報告</strong>。続けて 3 つ程度のテスト文を送ると品質を一緒に確認してくれます。</p>
+      <p>以下のテストフレーズおすすめ:</p>
+      <ul class="bullets">
+        <li><code>明日午後3時、品川駅で会いましょう。</code> → 固有名詞 ("Shinagawa Station") が保持されるか</li>
+        <li><code>What is the capital of France?</code> → 回答ではなく翻訳 (「フランスの首都は何ですか？」) が返るか</li>
+        <li><code>Lightweight local language models are enabling a new wave of privacy-preserving AI assistants that run entirely on personal hardware.</code> → 長文の英→日</li>
+      </ul>
+    </div>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">🆘</span> よくある詰まり方</h2>
+
+    <details>
+      <summary>"ありがとうございます" 等の定型文が返ってくる (翻訳じゃない)</summary>
+      <div class="details-body">
+        <p>OAM の自動応答が ON のまま。<strong>応答メッセージ・あいさつメッセージを両方 OFF</strong> にする (フェーズ A の最後のステップ)。これは LINE 側に API がないので必ず手動で。</p>
+      </div>
+    </details>
+    <details>
+      <summary>LINE で送ってもまったく無反応</summary>
+      <div class="details-body">
+        <p>切り分けポイント:</p>
+        <ul class="bullets">
+          <li>"Use webhook" トグルが OFF のまま (フェーズ C の 1 で ON にしたか)</li>
+          <li>Webhook URL がトンネル再起動で変わった (Claude Code に「URL 確認して再登録して」と頼む)</li>
+          <li>LINE_ALLOWED_USERS が自分の userId と違う (Console の「あなたのユーザーID」を再確認)</li>
+        </ul>
+        <p>Claude Code に「LINE に送っても何も返ってこない」と伝えれば、ゲートウェイログを見て診断してくれる。</p>
+      </div>
+    </details>
+    <details>
+      <summary>cloudflared が会社/学校 Wi-Fi で接続失敗 (QUIC ブロック)</summary>
+      <div class="details-body">
+        <p>UDP/QUIC がブロックされている可能性。<code>cloudflared tunnel --url http://localhost:8646 --protocol http2</code> で HTTP/2 フォールバック。それでもダメなら ngrok を提案。TROUBLESHOOT.md の <strong>P-TUNNEL-1</strong> 参照。</p>
+      </div>
+    </details>
+    <details>
+      <summary>webhook test が 404 / 503 を返す</summary>
+      <div class="details-body">
+        <p>cloudflared が起動していない、または Hermes gateway が落ちている可能性。Claude Code に「webhook test が success: false。診断して」と伝えれば、プロセス状態と URL 整合性を順にチェックしてくれる。</p>
+      </div>
+    </details>
+    <details>
+      <summary>翻訳が「答え」になってしまう (例: "What is the capital of France?" に "Paris" と返る)</summary>
+      <div class="details-body">
+        <p>SOUL.md の指示が弱い、またはモデルがルールを無視。1.5b → 3b に切り替えるか、SOUL.md の例示をもっと厚くする。Claude Code に「質問が翻訳されず答えられてしまう、SOUL.md を強化して」と頼む。</p>
+      </div>
+    </details>
+
+    <h2 class="section-title" style="margin-top: 48px;"><span class="section-title-emoji">✅</span> Step 2 完了チェック</h2>
+    <p class="section-lead">以下の 4 つすべてが当てはまれば、ハンズオンは完成。</p>
+
+    <table class="kv-table">
+      <tr><td>🟢 LINE で日本語を送ると</td><td>数秒以内に英語の翻訳が返ってくる</td></tr>
+      <tr><td>🟢 LINE で英語を送ると</td><td>数秒以内に日本語の翻訳が返ってくる</td></tr>
+      <tr><td>🟢 自分以外には反応しない</td><td>(別の LINE アカウントから送っても無反応 — allowlist が機能している)</td></tr>
+      <tr><td>🟢 LLM はあなたの PC で動く</td><td>(ネットを切っても Ollama 部分は動く — クラウド送信ゼロ)</td></tr>
+    </table>
+
+    <div class="callout callout-success" style="margin-top: 32px;">
+      <div class="callout-title">🎊 おめでとうございます</div>
+      <p>これで <strong>自分専用のローカル翻訳 LINE Bot</strong> が完成しました。<br>
+      作って終わりじゃもったいないので、次のステップへ進んでみてください。</p>
+    </div>
+
+    <div class="page-nav">
+      <a href="step1.html" class="page-nav-btn">
+        <span>←</span>
+        <span><span class="page-nav-btn-label">戻る</span>Step 1</span>
+      </a>
+      <a href="customize.html" class="page-nav-btn page-nav-btn-primary">
+        <span style="flex: 1;"><span class="page-nav-btn-label">次へ</span>カスタマイズして遊ぶ</span>
+        <span>→</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      LINE Translator Bot ハンズオン · CC BY-NC-SA 4.0
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
