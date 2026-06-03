@@ -92,6 +92,16 @@ document.getElementById('btn-like').addEventListener('click', () => handleAction
 document.getElementById('btn-nope').addEventListener('click', () => handleAction(false));
 document.getElementById('btn-superlike').addEventListener('click', () => handleAction(true));
 
+// Bind keyboard arrow keys
+document.addEventListener('keydown', (e) => {
+    if (!isChallengeActive || currentIndex >= cards.length) return;
+    if (e.key === 'ArrowRight') {
+        handleAction(true);
+    } else if (e.key === 'ArrowLeft') {
+        handleAction(false);
+    }
+});
+
 // Create Card DOM Element
 function createCard(data, zIndex) {
     const el = document.createElement('div');
@@ -110,6 +120,7 @@ function createCard(data, zIndex) {
     
     el.dataset.id = data.id;
     el.dataset.src = data.src;
+    el.dataset.title = data.title;
     return el;
 }
 
@@ -189,7 +200,8 @@ function swipeOut(card, isKeep) {
     if (isKeep) {
         keptPhotos.push({
             id: card.dataset.id,
-            src: card.dataset.src
+            src: card.dataset.src,
+            title: card.dataset.title
         });
     }
     
@@ -260,6 +272,28 @@ function generateGallery() {
         item.className = 'gallery-item';
         item.innerHTML = `<img src="${photo.src}" alt="Kept photo" onerror="this.onerror=null; this.src='https://placehold.co/400x500/1e293b/8b5cf6?text=RAW';">`;
         galleryGrid.appendChild(item);
+    });
+}
+
+// Copy Filenames Feature
+const btnCopyList = document.getElementById('btn-copy-list');
+if (btnCopyList) {
+    btnCopyList.addEventListener('click', () => {
+        if (keptPhotos.length === 0) {
+            alert("No photos to copy.");
+            return;
+        }
+        const filenames = keptPhotos.map(p => p.title).join('\\n');
+        navigator.clipboard.writeText(filenames).then(() => {
+            const originalHTML = btnCopyList.innerHTML;
+            btnCopyList.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btnCopyList.innerHTML = originalHTML;
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            alert("Copy failed. Please manually select and copy.");
+        });
     });
 }
 
