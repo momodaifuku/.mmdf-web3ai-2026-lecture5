@@ -189,9 +189,30 @@ main {
     margin-bottom: 15px;
 }
 
-.start-container p {
+.start-contain.overlay p {
     color: var(--text-muted);
-    margin-bottom: 30px;
+    margin-bottom: 2rem;
+}
+
+.analytics-box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px 25px;
+    border-radius: 12px;
+    margin: 15px 0;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.analytics-box p {
+    margin: 8px 0;
+    font-size: 1rem;
+    color: var(--text-light);
+}
+
+.analytics-box span {
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 1.2rem;
 }
 
 .file-label {

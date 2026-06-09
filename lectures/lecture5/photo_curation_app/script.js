@@ -9,6 +9,49 @@ let isChallengeActive = true;
 let timer = 30;
 let timerInterval;
 
+// Analytics
+let startTime = 0;
+let timeSpent = 0;
+
+// Audio Context for Sound Effects
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+
+function initAudio() {
+    if (!audioCtx) audioCtx = new AudioContext();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playTone(freq, type, duration) {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+function playKeep() {
+    playTone(800, 'sine', 0.1);
+    setTimeout(() => playTone(1200, 'sine', 0.15), 50);
+}
+
+function playDelete() {
+    playTone(300, 'square', 0.1);
+    setTimeout(() => playTone(200, 'square', 0.15), 50);
+}
+
+function playFinish() {
+    playTone(400, 'sine', 0.1);
+    setTimeout(() => playTone(600, 'sine', 0.1), 100);
+    setTimeout(() => playTone(800, 'sine', 0.2), 200);
+}
+
 // DOM Elements
 const cardContainer = document.getElementById('card-container');
 const timerBar = document.getElementById('timer-bar');
@@ -53,6 +96,7 @@ fileInput.addEventListener('change', (e) => {
     viewSwipe.classList.remove('hidden');
     viewSwipe.classList.add('active');
     
+    initAudio(); // Initialize audio context on user interaction
     init();
 });
 
@@ -203,6 +247,9 @@ function swipeOut(card, isKeep) {
             src: card.dataset.src,
             title: card.dataset.title
         });
+        playKeep();
+    } else {
+        playDelete();
     }
     
     currentIndex++;
@@ -223,6 +270,7 @@ function swipeOut(card, isKeep) {
 // Timer Logic
 function startTimer() {
     updateTimerUI();
+    startTime = Date.now();
     
     timerInterval = setInterval(() => {
         timer--;
@@ -254,6 +302,16 @@ function updateTimerUI() {
 function endChallenge() {
     isChallengeActive = false;
     clearInterval(timerInterval);
+    
+    timeSpent = (Date.now() - startTime) / 1000;
+    playFinish();
+    
+    // Update Analytics UI
+    document.getElementById('stat-processed').innerText = currentIndex;
+    document.getElementById('stat-kept').innerText = keptPhotos.length;
+    const speed = currentIndex > 0 ? (timeSpent / currentIndex).toFixed(2) : '0.00';
+    document.getElementById('stat-speed').innerText = speed;
+    
     gameOverOverlay.classList.remove('hidden');
     generateGallery();
 }
