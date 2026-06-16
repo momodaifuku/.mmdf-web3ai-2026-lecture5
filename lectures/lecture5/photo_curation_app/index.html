@@ -49,6 +49,9 @@
                 </div>
                 
                 <div class="action-buttons">
+                    <button class="btn-action btn-undo" id="btn-undo" title="Undo (Ctrl+Z)">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
                     <button class="btn-action btn-nope" id="btn-nope">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -81,6 +84,9 @@
                     <button id="btn-copy-list" class="primary-btn" style="margin-top: 10px; padding: 8px 16px; font-size: 0.9rem; background-color: #3b82f6;">
                         <i class="fas fa-copy"></i> Copy Filenames
                     </button>
+                    <button id="btn-download-zip" class="primary-btn" style="margin-top: 10px; margin-left: 10px; padding: 8px 16px; font-size: 0.9rem; background-color: #10b981;">
+                        <i class="fas fa-file-zipper"></i> Download ZIP
+                    </button>
                 </div>
                 <div class="gallery-grid" id="gallery-grid">
                     <!-- Kept photos will be injected here -->
@@ -91,6 +97,7 @@
 
     <!-- Hammer.js for swipe gestures -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <script src="script.js?v=2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>

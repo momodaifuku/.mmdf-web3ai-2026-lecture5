@@ -5,6 +5,7 @@ let photosData = [];
 let cards = [];
 let currentIndex = 0;
 let keptPhotos = [];
+let actionHistory = [];
 let isChallengeActive = true;
 let timer = 30;
 let timerInterval;
@@ -106,6 +107,7 @@ function init() {
     cards = [];
     currentIndex = 0;
     keptPhotos = [];
+    actionHistory = [];
     isChallengeActive = true;
     timer = 30;
     cardContainer.innerHTML = '';
@@ -135,10 +137,22 @@ function init() {
 document.getElementById('btn-like').addEventListener('click', () => handleAction(true));
 document.getElementById('btn-nope').addEventListener('click', () => handleAction(false));
 document.getElementById('btn-superlike').addEventListener('click', () => handleAction(true));
+const btnUndo = document.getElementById('btn-undo');
+if (btnUndo) btnUndo.addEventListener('click', undo);
 
-// Bind keyboard arrow keys
+// Bind keyboard keys
 document.addEventListener('keydown', (e) => {
-    if (!isChallengeActive || currentIndex >= cards.length) return;
+    if (!isChallengeActive) return;
+    
+    // Undo shortcut (Cmd+Z or Ctrl+Z)
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+        return;
+    }
+    
+    if (currentIndex >= cards.length) return;
+    
     if (e.key === 'ArrowRight') {
         handleAction(true);
     } else if (e.key === 'ArrowLeft') {
@@ -241,6 +255,13 @@ function swipeOut(card, isKeep) {
     card.style.transform = `translate(${xDest}px, -100px) rotate(${rotate}deg)`;
     card.style.opacity = 0;
     
+    // Record history for Undo
+    actionHistory.push({
+        index: currentIndex,
+        isKeep: isKeep,
+        card: card
+    });
+    
     if (isKeep) {
         keptPhotos.push({
             id: card.dataset.id,
@@ -254,9 +275,11 @@ function swipeOut(card, isKeep) {
     
     currentIndex++;
     
-    // Remove old card from DOM after transition
+    // Hide old card instead of removing to allow undo
     setTimeout(() => {
-        card.remove();
+        if (card.style.opacity === "0") {
+            card.style.visibility = 'hidden';
+        }
         
         if (currentIndex >= cards.length) {
             endChallenge();
@@ -265,6 +288,37 @@ function swipeOut(card, isKeep) {
             initHammer(cards[currentIndex]);
         }
     }, 300);
+}
+
+// Undo Logic
+function undo() {
+    if (!isChallengeActive || currentIndex <= 0 || actionHistory.length === 0) return;
+    
+    const lastAction = actionHistory.pop();
+    currentIndex--;
+    
+    // Revert kept photos
+    if (lastAction.isKeep) {
+        keptPhotos.pop();
+    }
+    
+    const card = lastAction.card;
+    
+    // Restore card styling
+    card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease';
+    card.style.visibility = 'visible';
+    card.style.transform = 'translate(0px, 0px) rotate(0deg)';
+    card.style.opacity = 1;
+    
+    card.querySelector('.status-keep').style.opacity = 0;
+    card.querySelector('.status-delete').style.opacity = 0;
+    
+    // Ensure the card stays at the end of the container (top visually)
+    cardContainer.appendChild(card);
+    
+    // Re-initialize hammer if it's the current top card
+    initHammer(card);
+    playTone(600, 'sine', 0.1); // subtle undo sound
 }
 
 // Timer Logic
@@ -352,6 +406,57 @@ if (btnCopyList) {
             console.error('Failed to copy text: ', err);
             alert("Copy failed. Please manually select and copy.");
         });
+    });
+}
+
+// Download ZIP Feature
+const btnDownloadZip = document.getElementById('btn-download-zip');
+if (btnDownloadZip) {
+    btnDownloadZip.addEventListener('click', async () => {
+        if (keptPhotos.length === 0) {
+            alert("No photos to download.");
+            return;
+        }
+        
+        if (typeof JSZip === 'undefined') {
+            alert("ZIP library failed to load.");
+            return;
+        }
+        
+        btnDownloadZip.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Zipping...';
+        btnDownloadZip.disabled = true;
+        
+        try {
+            const zip = new JSZip();
+            
+            for (let i = 0; i < keptPhotos.length; i++) {
+                const photo = keptPhotos[i];
+                // Fetch the actual blob data from the object URL
+                const response = await fetch(photo.src);
+                const blob = await response.blob();
+                zip.file(photo.title, blob);
+            }
+            
+            const content = await zip.generateAsync({type: "blob"});
+            
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = "memoria_curated_photos.zip";
+            link.click();
+            
+            btnDownloadZip.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+            setTimeout(() => {
+                btnDownloadZip.innerHTML = '<i class="fas fa-file-zipper"></i> Download ZIP';
+                btnDownloadZip.disabled = false;
+            }, 3000);
+            
+        } catch (e) {
+            console.error("Error creating ZIP", e);
+            alert("Failed to create ZIP file.");
+            btnDownloadZip.innerHTML = '<i class="fas fa-file-zipper"></i> Download ZIP';
+            btnDownloadZip.disabled = false;
+        }
     });
 }
 
