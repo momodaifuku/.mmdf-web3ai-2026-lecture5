@@ -35,10 +35,28 @@
                 <div class="start-container">
                     <h2>Select Photos</h2>
                     <p>Choose photos from your device to start the curation challenge.</p>
-                    <label for="file-input" class="primary-btn file-label">
-                        <i class="fa-solid fa-folder-open"></i> Open Photos
-                    </label>
-                    <input type="file" id="file-input" multiple accept="image/*,.cr2,.cr3,.arw,.dng,.nef" style="display: none;">
+                    
+                    <div class="settings-group" style="margin-bottom: 25px; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                        <label style="display: block; margin-bottom: 10px; color: var(--text-light); font-weight: 600;"><i class="fa-solid fa-stopwatch"></i> Timer Setting</label>
+                        <select id="timer-setting" style="width: 100%; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.5); color: white; border: 1px solid rgba(255,255,255,0.2); font-family: inherit; font-size: 1rem; outline: none;">
+                            <option value="15">15 Seconds (Speedrun)</option>
+                            <option value="30" selected>30 Seconds (Standard)</option>
+                            <option value="60">60 Seconds (Relaxed)</option>
+                            <option value="0">No Timer (Zen Mode)</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <label for="file-input" class="primary-btn file-label" style="flex: 1; min-width: 140px; margin-bottom: 0;">
+                            <i class="fa-solid fa-images"></i> Select Files
+                        </label>
+                        <input type="file" id="file-input" multiple accept="image/*,.cr2,.cr3,.arw,.dng,.nef" style="display: none;">
+                        
+                        <label for="folder-input" class="primary-btn file-label" style="flex: 1; min-width: 140px; background-color: #6366f1; margin-bottom: 0;">
+                            <i class="fa-solid fa-folder-open"></i> Select Folder
+                        </label>
+                        <input type="file" id="folder-input" webkitdirectory directory multiple style="display: none;">
+                    </div>
                 </div>
             </section>
 

@@ -8,6 +8,7 @@ let keptPhotos = [];
 let actionHistory = [];
 let isChallengeActive = true;
 let timer = 30;
+let selectedTimer = 30;
 let timerInterval;
 
 // Analytics
@@ -70,11 +71,12 @@ const viewStart = document.getElementById('start-view');
 const fileInput = document.getElementById('file-input');
 
 // File Selection Logic
-fileInput.addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+const timerSettingUI = document.getElementById('timer-setting');
 
-    photosData = files.filter(file => {
+function handleFiles(filesArray) {
+    if (filesArray.length === 0) return;
+
+    photosData = filesArray.filter(file => {
         const ext = file.name.split('.').pop().toLowerCase();
         return file.type.startsWith('image/') || ['cr2', 'cr3', 'raw', 'dng', 'arw', 'nef'].includes(ext);
     }).map((file, index) => {
@@ -90,6 +92,11 @@ fileInput.addEventListener('change', (e) => {
         alert("Please select valid image files.");
         return;
     }
+    
+    // Read user timer preference
+    if (timerSettingUI) {
+        selectedTimer = parseInt(timerSettingUI.value, 10);
+    }
 
     // Hide start view, show swipe view
     viewStart.classList.remove('active');
@@ -97,9 +104,16 @@ fileInput.addEventListener('change', (e) => {
     viewSwipe.classList.remove('hidden');
     viewSwipe.classList.add('active');
     
-    initAudio(); // Initialize audio context on user interaction
+    initAudio(); 
     init();
-});
+}
+
+fileInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files)));
+
+const folderInput = document.getElementById('folder-input');
+if (folderInput) {
+    folderInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files)));
+}
 
 // Initialize the App
 function init() {
@@ -109,7 +123,7 @@ function init() {
     keptPhotos = [];
     actionHistory = [];
     isChallengeActive = true;
-    timer = 30;
+    timer = selectedTimer;
     cardContainer.innerHTML = '';
     gameOverOverlay.classList.add('hidden');
     if (timerInterval) clearInterval(timerInterval);
@@ -323,6 +337,14 @@ function undo() {
 
 // Timer Logic
 function startTimer() {
+    if (selectedTimer === 0) {
+        // Zen mode, no timer
+        document.getElementById('timer-container').style.display = 'none';
+        startTime = Date.now();
+        return;
+    }
+    
+    document.getElementById('timer-container').style.display = 'flex';
     updateTimerUI();
     startTime = Date.now();
     
@@ -338,12 +360,10 @@ function startTimer() {
 }
 
 function updateTimerUI() {
+    if (selectedTimer === 0) return;
     timerText.innerText = timer + 's';
-    // Use an inline style block on the pseudoelement is tricky, so we update the parent variable or style width directly
-    // Because timer-bar::after is handling width, we can set a CSS variable on timer-bar
-    const pct = (timer / 30) * 100;
+    const pct = (timer / selectedTimer) * 100;
     
-    // We didn't use a variable for after width in CSS, so we'll manipulate a style tag
     let styleEl = document.getElementById('dynamic-styles');
     if (!styleEl) {
         styleEl = document.createElement('style');
