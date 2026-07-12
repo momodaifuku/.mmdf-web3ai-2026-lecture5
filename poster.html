@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>CHIBATECH PROTOTYPE — Product Poster (A4)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="poster.css">
+</head>
+<body>
+<!--
+  === 使い方 ===
+  1. {{ここを書く}} を自分の内容に置き換える（コーチと対話しながら1枠ずつ）
+  2. 埋める順: 03 検証実績 → 05 失敗と学び → 01 バグ（この3つが揃えば "話しかけたい学生"）
+  3. 数字は小さくても必ず入れる（「0」は避ける）
+  4. 画像は figures/ に置き <img src="figures/xxx.png"> で差し込む
+  5. 印刷: Cmd+P → 用紙: A4縦 → 余白: なし → 詳細設定 → 背景グラフィック: ON → PDF保存
+-->
+
+<div class="poster">
+
+  <!-- ============ HEADER ============ -->
+  <header class="poster__header">
+    <div class="brand">
+      <span class="brand__logo">web3/AI</span>
+      <span class="brand__event">CHIBATECH PROTOTYPE · 2026.07.16</span>
+    </div>
+    <div class="brand__meta">千葉工業大学「総合科学特論 web3・AI概論」</div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__badges">
+      <span class="tag tag--pink">A-1 プロダクト</span>
+      <span class="tag tag--outline">Web App</span>
+    </div>
+    <h1 class="hero__title">Memoria</h1>
+    <p class="hero__tagline">
+      <span class="tagline__who">アイドルカメコ必見！</span>
+      <span class="tagline__what">深夜の5000枚の選別地獄を、</span>
+      <span class="tagline__how">直感的なスワイプで10分の「無心ゲー」に変える写真整理アプリ</span>
+    </p>
+    <div class="hero__visual">
+      <span class="ph">プロダクトのスクリーンショット（&lt;img src="figures/hero.png"&gt;等）を配置</span>
+    </div>
+  </section>
+
+  <!-- ============ 01 BUG / 02 SOLUTION ============ -->
+  <div class="two-col">
+    <section class="card card--bug">
+      <h2 class="section__title">
+        <span class="section__num">01</span>
+        <span class="section__name">バグ</span>
+        <span class="section__sub">実際に困ったこと</span>
+        <span class="badge badge--must">必須</span>
+      </h2>
+      <p class="quote quote--bug">
+        「ライブの日の深夜、SDカードがパンパンになり、PCの前で大量の似たような写真を前に何時間もため息をついていた」
+      </p>
+      <ul class="bullet-list">
+        <li>撮影直後で疲労困憊のアイドルカメコ</li>
+        <li>既存ソフトは多機能すぎて操作手順が多く、判断疲れを起こすから</li>
+      </ul>
+    </section>
+
+    <section class="card card--solution">
+      <h2 class="section__title">
+        <span class="section__num">02</span>
+        <span class="section__name">解決策 (プロダクト)</span>
+        <span class="section__sub">選んだ形</span>
+        <span class="badge badge--must">必須</span>
+      </h2>
+      <p class="quote quote--solution">
+        直感的なスワイプ操作によって、疲れた深夜でも無心で数千枚の写真をサクサク選別し、最速で楽しいレタッチ作業へと移れるようになる
+      </p>
+      <div class="how__visual">
+        <span class="ph">スワイプ画面のスクリーンショット等を配置</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 03 TRACTION (★最重要) ============ -->
+  <section class="traction">
+    <h2 class="section__title traction__title">
+      <span class="section__num">03</span>
+      <span class="section__name">検証実績</span>
+      <span class="section__sub">試して確かめた</span>
+      <span class="badge badge--must">必須</span>
+    </h2>
+
+    <div class="traction__grid">
+      <div class="metric">
+        <span class="metric__num">3名</span>
+        <span class="metric__label">使ってくれたカメコ仲間</span>
+      </div>
+      <div class="metric">
+        <span class="metric__num">5回</span>
+        <span class="metric__label">自身で試した回数</span>
+      </div>
+      <div class="metric">
+        <span class="metric__num">5000枚</span>
+        <span class="metric__label">整理できた写真の数</span>
+      </div>
+      <div class="metric">
+        <span class="metric__num">10分</span>
+        <span class="metric__label">完了までにかかった時間</span>
+      </div>
+    </div>
+
+    <div class="traction__body">
+      <div class="ba-compare">
+        <div class="ba-side ba-side--before">
+          <span class="ba__label">Before</span>
+          <span class="ba__figure">数時間（ため息）</span>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-side ba-side--after">
+          <span class="ba__label">After</span>
+          <span class="ba__figure">10分（無心でサクサク）</span>
+        </div>
+      </div>
+      <blockquote class="user-voice">
+        「レタッチする写真の選定がめっちゃ楽になった！」
+        <cite>— カメコ仲間</cite>
+      </blockquote>
+    </div>
+
+  </section>
+
+  <!-- ============ 04 TECH / 05 LEARNED ============ -->
+  <div class="two-col">
+    <section class="card card--tech">
+      <h2 class="section__title">
+        <span class="section__num">04</span>
+        <span class="section__name">技術構成</span>
+        <span class="section__sub">賢さは借りて、力仕事は自分で</span>
+        <span class="badge badge--rec">推奨</span>
+      </h2>
+      <div class="tech__arch" style="padding: 20px; text-align: left;">
+        <p>数千枚の重い写真をサーバーにアップロードせず、ブラウザ上で処理完結するローカルJS処理（File API / URL.createObjectURL）を採用。</p>
+      </div>
+      <ul class="tech__stack">
+        <li><code>Vanilla JS / CSS</code>高速なローカル処理・グラスモーフィズムUI</li>
+        <li><code>Hammer.js</code>ネイティブアプリのような直感スワイプ</li>
+        <li><code>AI (LLM)</code>アイデアを爆速でコードへと翻訳するペアプログラマ</li>
+      </ul>
+    </section>
+
+    <section class="card card--learned">
+      <h2 class="section__title">
+        <span class="section__num">05</span>
+        <span class="section__name">失敗と学び</span>
+        <span class="section__sub">失敗は学びのたね</span>
+        <span class="badge badge--must">必須</span>
+      </h2>
+      <div class="learned__block learned__block--failed">
+        <span class="learned__label learned__label--failed">✗ 通用しなかった</span>
+        <p>「ゲーム感覚」を狙った制限時間制度（30秒固定）は焦ってしまい微妙だと不評だった</p>
+      </div>
+      <div class="learned__block learned__block--won">
+        <span class="learned__label learned__label--won">✓ 分かったこと</span>
+        <p>ユーザーの用途に合わせて自由に時間を選択できるようにすると自分のペースで進められると分かった</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ 06 NEXT ============ -->
+  <section class="next">
+    <h2 class="section__title next__title">
+      <span class="section__num">06</span>
+      <span class="section__name">次の一手 (方向転換案)</span>
+      <span class="section__sub">もっとよくしていく</span>
+      <span class="badge badge--rec-strong">強く推奨</span>
+    </h2>
+    <p class="next__body">
+      連写による似た画角の写真の中から、半目や口開きなどをAIで自動判定して弾く機能を実装したい。
+    </p>
+  </section>
+
+  <!-- ============ FOOTER (★ 顔写真 + QR 必須) ============ -->
+  <footer class="poster__footer">
+    <div class="team">
+      <div class="team__photo">
+        <span class="ph">顔写真</span>
+      </div>
+      <div class="team__info">
+        <div class="team__name-row">
+          <div class="team__name">momodaifuku</div>
+          <span class="badge badge--must badge--small">必須</span>
+        </div>
+        <div class="team__affiliation">社会人受講生</div>
+        <div class="team__contact">momodaifuku.profile</div>
+        <div class="team__pitch">
+          <span class="pitch__label">話したいこと</span>
+          RAW画像のブラウザプレビューの高速化についてアドバイスが欲しい！
+        </div>
+      </div>
+    </div>
+    <div class="qrs">
+      <div class="qr">
+        <div class="qr__code">QR</div>
+        <span class="qr__label">プロダクト</span>
+      </div>
+      <div class="qr">
+        <div class="qr__code">QR</div>
+        <span class="qr__label">連絡先/SNS</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
